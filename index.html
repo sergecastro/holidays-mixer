@@ -3,51 +3,44 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Holiday Mixer — Slot Machine (ב״ה + prototype media)</title>
+<title>Holiday Mixer v2 — Enhanced Slot Machine</title>
 <style>
   :root{
     --bg:#080d22; --ink:#f7fbff; --muted:#c7d4ff; --rim:#2a3570; --gold:#ffd54f; --good:#29e3a2;
     --r1a:#0e5ce6; --r1b:#7ac3ff; --r2a:#7b2fe0; --r2b:#f3a9ff; --r3a:#0ea66c; --r3b:#aef7d0;
-    --r4a:#ffb703; --r4b:#ffe9a8; --r5a:#ff6a00; --r5b:#ffb38a;
+    --r4a:#ffb703; --r4b:#ffe9a8; --r5a:#ff6a00; --r5b:#ffb38a; --r6a:#e600ff; --r6b:#ff8aff; --r7a:#00ffcc; --r7b:#aaffff;
   }
   *{box-sizing:border-box}
-  body{margin:0; background:radial-gradient(1600px 1200px at 50% -20%, #2a3570 0%, var(--bg) 60%);
-       color:var(--ink); font-family:Inter,system-ui,Segoe UI,Roboto,Arial; font-size:18px;}
+  body{
+    margin:0; background:radial-gradient(1600px 1200px at 50% -20%, #2a3570 0%, var(--bg) 60%);
+    color:var(--ink); font-family:'Open Sans', sans-serif; font-size:16px;
+  }
   header{padding:26px 16px; text-align:center; position:relative}
-  h1{margin:0 0 10px; font-size:40px; letter-spacing:.2px}
-  .note{color:var(--muted); font-size:18px}
+  h1{margin:0 0 10px; font-size:24px; font-family:'Comic Neue', cursive; letter-spacing:.2px}
+  .note{color:var(--muted); font-size:14px}
   .lang{position:absolute; top:12px; right:16px; display:flex; gap:10px}
-  .lang button{cursor:pointer; border:0; border-radius:12px; padding:10px 16px; font-weight:900; font-size:18px; background:#202a57; color:#d7e5ff}
+  .lang button{cursor:pointer; border:0; border-radius:12px; padding:10px 16px; font-weight:400; font-size:14px; background:#202a57; color:#d7e5ff; font-family:'Open Sans', sans-serif;}
   .lang .on{background:linear-gradient(180deg,#15a9ff,#0675ce); color:#fff}
-
-  /* NEW: B"H badge */
-  .bhe{position:absolute; top:10px; left:16px; font-weight:900; font-size:22px; color:#ffe07a;
-       text-shadow:0 1px 1px rgba(0,0,0,.8); letter-spacing:.5px; user-select:none}
-  .bhe small{display:block; font-size:12px; color:#ffd54f; opacity:.85}
-
   .wrap{max-width:1500px; margin:0 auto; padding:12px 16px 90px}
   .board{background:linear-gradient(180deg,#0f163d,#0a102c); border:1px solid var(--rim); border-radius:22px;
          padding:20px; box-shadow:0 30px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.05)}
-
   .actions{display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:14px}
-  .btn{cursor:pointer; border:0; border-radius:14px; padding:14px 18px; font-weight:900; font-size:18px}
+  .btn{cursor:pointer; border:0; border-radius:14px; padding:14px 18px; font-weight:400; font-size:14px; font-family:'Open Sans', sans-serif;}
   .btn-primary{background:linear-gradient(180deg,#15a9ff,#0675ce); color:#fff}
   .btn-ghost{background:#202a57; color:#d7e5ff}
-
+  .btn-mode{background:linear-gradient(180deg,#ff6a00,#ffb38a); color:#fff}
   .lever{margin-left:auto; display:flex; align-items:center; gap:10px}
   .stick{width:12px; height:70px; background:#aaa; border-radius:6px; position:relative}
   .knob{width:34px; height:34px; background:var(--gold); border-radius:50%; position:relative; top:-8px; left:-10px;
         box-shadow:0 4px 10px rgba(0,0,0,.6); cursor:pointer}
-
   .headerlights{height:12px; border-radius:8px; margin:10px 0 12px;
     background:linear-gradient(90deg,#ff5f5f,#ffd54f,#6dff6d,#6fd3ff,#b58cff,#ff5f5f);
     background-size:300% 100%; animation:lights 6s linear infinite; opacity:.75}
-  .machine{position:relative; display:grid; grid-template-columns:repeat(5,1fr); gap:18px; align-items:stretch;
+  .machine{position:relative; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:18px; align-items:stretch;
            border:2px solid #c8a23a; border-radius:18px; padding:16px; background:linear-gradient(180deg,#1a2149,#0b1130)}
   .machine.win{box-shadow:0 0 0 6px rgba(255,213,79,.7), 0 0 40px 14px rgba(255,213,79,.45); animation:glow 1s ease-in-out 9;}
   @keyframes lights{0%{background-position:0 0}100%{background-position:300% 0}}
   @keyframes glow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.25)}}
-
   .reel{border-radius:16px; padding:14px; position:relative; box-shadow:inset 0 0 28px rgba(0,0,0,.38);
         border:1px solid rgba(255,255,255,.1)}
   .reel[data-i="0"]{background:linear-gradient(180deg,var(--r1a),var(--r1b))}
@@ -55,77 +48,83 @@
   .reel[data-i="2"]{background:linear-gradient(180deg,var(--r3a),var(--r3b))}
   .reel[data-i="3"]{background:linear-gradient(180deg,var(--r4a),var(--r4b))}
   .reel[data-i="4"]{background:linear-gradient(180deg,var(--r5a),var(--r5b))}
+  .reel[data-i="5"]{background:linear-gradient(180deg,var(--r6a),var(--r6b))}
+  .reel[data-i="6"]{background:linear-gradient(180deg,var(--r7a),var(--r7b))}
   .chrome{position:absolute; inset:0; border-radius:16px; padding:8px; pointer-events:none;}
   .chrome:before{content:""; position:absolute; inset:0; border-radius:16px; border:2px solid rgba(255,255,255,.5);
                  box-shadow:inset 0 0 14px rgba(255,255,255,.35), inset 0 0 34px rgba(255,255,255,.18)}
-
-  .title{font-size:18px; letter-spacing:.4px; color:#0b1030; text-shadow:0 1px 1px rgba(255,255,255,.7);
-         margin-bottom:10px; font-weight:900; display:flex; align-items:center; gap:8px}
-  .title .ico{font-size:20px}
-
+  .title{font-size:16px; letter-spacing:.4px; color:#0b1030;
+         margin-bottom:10px; font-weight:400; display:flex; align-items:center; gap:8px; font-family:'Comic Neue', cursive;}
+  .title .ico{font-size:18px}
   .window{position:relative; height:210px; overflow:hidden; border-radius:14px; background:rgba(10,16,39,.25);
           border:2px solid rgba(255,255,255,.7); backdrop-filter: blur(1px)}
   .window.stop{animation:stopPulse .28s ease;}
   @keyframes stopPulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.0)}100%{box-shadow:0 0 0 10px rgba(255,255,255,.0)}}
-
   .payline{position:absolute; left:0; right:0; top:70px; height:70px;
            border-top:2px dashed #fff; border-bottom:2px dashed #fff;
            box-shadow:0 0 12px rgba(255,255,255,.5) inset; pointer-events:none; transition:box-shadow .25s}
   .payline.almost{box-shadow:0 0 18px rgba(255,213,79,.9) inset, 0 0 12px rgba(255,213,79,.6) inset}
-
   .strip{list-style:none; padding:0; margin:0; transition: transform .55s cubic-bezier(.2,.8,.2,1)}
-  .cell{height:70px; display:flex; align-items:center; justify-content:center; padding:0 12px; text-align:center;
-        font-weight:800; font-size:20px; line-height:1.15; color:#0a1130; text-shadow:0 1px 0 rgba(255,255,255,.6);
-        cursor:pointer; user-select:none; background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.56))}
+  .cell{
+    height:70px; display:flex; align-items:center; justify-content:center; padding:0 8px;
+    text-align:center; font-weight:700; font-size:14px; line-height:1.2;
+    color:#0a1130; cursor:pointer; user-select:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.56)); position:relative;
+    white-space: normal; word-wrap: break-word; overflow: hidden;
+  }
   .cell:nth-child(odd){background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(255,255,255,.65))}
+  .cell img{width:40px; height:40px; object-fit:contain; margin-right:4px;}
   .controls{display:flex; gap:8px; margin-top:10px}
-  .btn-mini{cursor:pointer; border:0; border-radius:12px; padding:10px 12px; font-weight:900; font-size:18px; background:rgba(0,0,0,.22); color:#0b1030; border:1px solid rgba(255,255,255,.6)}
-
-  .status{margin-top:12px; min-height:30px; font-size:22px}
+  .btn-mini{cursor:pointer; border:0; border-radius:12px; padding:8px 12px; font-weight:400; font-size:12px; background:rgba(0,0,0,.22); color:#0b1030; border:1px solid rgba(255,255,255,.6); font-family:'Open Sans', sans-serif;}
+  .status{margin-top:12px; min-height:30px; font-size:16px; font-family:'Open Sans', sans-serif;}
   .success{ color:var(--good) }
-
-  .win-banner{position:fixed; left:50%; top:12%; transform:translateX(-50%) scale(.95);
-              background:linear-gradient(180deg,#fff7c2,#ffe37a); border:4px solid #e8b700; color:#5a4100; font-weight:900;
-              padding:16px 22px; border-radius:16px; font-size:34px; box-shadow:0 14px 40px rgba(0,0,0,.35);
-              display:none; z-index:2000; animation:pop .6s ease}
+  .win-banner{
+    position:fixed; left:50%; top:12%; transform:translateX(-50%) scale(.95);
+    background:linear-gradient(180deg,#fff7c2,#ffe37a);
+    border:4px solid #e8b700; color:#5a4100; font-weight:400; padding:16px 22px; border-radius:16px; font-size:24px;
+    box-shadow:0 14px 40px rgba(0,0,0,.35); display:none; z-index:2000; animation:pop .6s ease; font-family:'Comic Neue', cursive;
+  }
   .win-banner.show{display:block}
   @keyframes pop{0%{transform:translateX(-50%) scale(.6); opacity:0} 100%{transform:translateX(-50%) scale(.95); opacity:1}}
   .confetti{position:fixed; top:-2vh; width:9px; height:14px; border-radius:2px; z-index:1999}
-
   .info{margin-top:18px; background:linear-gradient(180deg,#0e1536,#0a102a); border:1px solid var(--rim); border-radius:16px; padding:18px;
         box-shadow:inset 0 0 24px rgba(0,0,0,.35)}
-  .info h3{margin:0 0 12px; font-size:26px}
+  .info h3{margin:0 0 12px; font-size:20px; font-family:'Comic Neue', cursive;}
   .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px}
   .card{background:#0c122e; border:1px solid #2b3569; border-radius:12px; padding:14px}
-  .card h4{margin:0 0 8px; font-size:16px; color:#bcd1ff; letter-spacing:.4px}
-  .card .v{font-weight:800; font-size:20px}
-
-  /* Media preview cards */
-  .media{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; margin-top:12px}
-  .poster{width:100%; height:160px; border-radius:10px; border:1px solid #2b3569; background:#0a1130; object-fit:cover}
-  .anim{height:160px; display:grid; place-items:center; border-radius:10px; border:1px solid #2b3569; background:#0a1130; font-size:64px}
-  .bounce{animation:bounce 1.2s infinite}
-  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-  .play{cursor:pointer; border:0; border-radius:10px; padding:10px 14px; font-weight:900; background:#1b2348; color:#d7e5ff; border:1px solid #2b3569}
-
+  .card h4{margin:0 0 8px; font-size:14px; color:#bcd1ff; letter-spacing:.4px; font-family:'Open Sans', sans-serif;}
+  .card .v{font-weight:400; font-size:16px; font-family:'Open Sans', sans-serif;}
+  .card img{width:100%; height:auto; border-radius:8px;}
+  .card video{width:100%; height:auto;}
+  .card audio{width:100%;}
+  .ai-btn{ cursor:pointer; background:linear-gradient(180deg,#ff00ff,#8a00ff); color:#fff; padding:10px; border-radius:12px; margin-top:10px; font-family:'Open Sans', sans-serif; }
+  /* RTL tweaks */
   [dir="rtl"] .machine{direction:rtl}
   [dir="rtl"] .title, [dir="rtl"] .cell, [dir="rtl"] .note {text-align:right}
+  /* Particles for WOW */
+  .particles{position:absolute; inset:0; pointer-events:none;}
+  .particle{position:absolute; width:5px; height:5px; background:#ffd54f; border-radius:50%; animation:particleAnim 2s linear infinite;}
+  @keyframes particleAnim{0%{transform:translateY(0) scale(1); opacity:1} 100%{transform:translateY(-100px) scale(0); opacity:0}}
+  /* Add Google Fonts */
+  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Open+Sans:wght@400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap'); /* Hebrew support with bold */
 </style>
 </head>
 <body>
 <header>
-  <div class="bhe">ב״ה<small>B’ezrat Hashem</small></div>
   <div class="lang">
     <button id="lang-en" class="on">English</button>
     <button id="lang-he">‏עברית</button>
   </div>
-  <h1 id="title">Holiday Mixer — Slot Machine</h1>
-  <div class="note" id="subtitle">Click a cell to snap that reel to the center. Or spin reels. Align all five center cells to the same holiday.</div>
+  <h1 id="title">Holiday Mixer v2 — Enhanced Slot Machine</h1>
+  <div class="note" id="subtitle">Choose mode, spin, align holidays! Earn points for power-ups.</div>
 </header>
-
 <div class="wrap">
   <div class="board">
     <div class="actions">
+      <button class="btn btn-mode" id="btn-easy">Easy (3 Reels)</button>
+      <button class="btn btn-mode" id="btn-medium">Medium (5 Reels)</button>
+      <button class="btn btn-mode" id="btn-hard">Hard (7 Reels)</button>
       <button class="btn btn-primary" id="btn-spin-all">🎰 <span data-i18n="spinAll">Spin All</span></button>
       <button class="btn btn-ghost" id="btn-new" data-i18n="newRound">New Round</button>
       <button class="btn btn-ghost" id="btn-hint">Hint: OFF</button>
@@ -133,11 +132,9 @@
         <div class="stick"></div><div class="knob" id="lever"></div>
       </div>
     </div>
-
     <div class="headerlights"></div>
     <div class="machine" id="machine"></div>
-    <div class="status" id="status"></div>
-
+    <div class="status" id="status">Score: 0 | Time: 120s</div>
     <div class="info" id="info" style="display:none">
       <h3 id="info-title">Holiday</h3>
       <div class="grid">
@@ -146,322 +143,390 @@
         <div class="card"><h4 id="lbl-season">Season</h4><div class="v" id="i-season">—</div></div>
         <div class="card"><h4 id="lbl-symbol">Symbol</h4><div class="v" id="i-symbol">—</div></div>
       </div>
-
-      <!-- NEW: prototype media section -->
-      <div class="media">
-        <div class="card">
-          <h4 id="lbl-poster">Image</h4>
-          <img id="poster" class="poster" alt="Poster"/>
+      <div class="grid">
+        <div class="card" id="photo-card" style="display:none">
+          <h4>Photo</h4>
+          <img id="holiday-photo" src="" alt="Holiday photo">
         </div>
-        <div class="card">
-          <h4 id="lbl-anim">“Video”</h4>
-          <div id="anim" class="anim">🎉</div>
+        <div class="card" id="video-card" style="display:none">
+          <h4>Video</h4>
+          <video id="win-video" controls>
+            <source type="video/mp4">
+          </video>
         </div>
-        <div class="card">
-          <h4 id="lbl-audio">Song / Tune</h4>
-          <button class="play" id="btn-play">▶︎ Play</button>
-          <button class="play" id="btn-stop" style="margin-left:8px">■ Stop</button>
+        <div class="card" id="song-card" style="display:none">
+          <h4>Song</h4>
+          <audio id="holiday-song" controls>
+            <source type="audio/m4a">
+          </audio>
         </div>
       </div>
-
-      <div style="margin-top:10px; color:#bcd1ff" id="coming">
-        Coming soon: real photos, videos, songs, and “Ask about this holiday”.
-      </div>
+      <div style="margin-top:10px; color:#bcd1ff" id="coming">Explore the photo, video, and song for this holiday!</div>
+      <button class="ai-btn" id="ai-ask">Ask AI for More</button>
     </div>
   </div>
 </div>
-
 <div class="win-banner" id="win-banner">🎉 YOU WIN! 🎉</div>
-
+<!-- Updated Audio Sources with Local Paths -->
+<audio id="spin-sound" src="./audio files/HAVA NAGILA.m4a"></audio> /* General spin sound */
+<audio id="win-sound"></audio> /* Dynamically set per holiday on win */
 <script>
 (function(){
-  /* Data (ENG+HE) */
+  /* --------- Data as JSON for Modularity with Media Mapping --------- */
   const DATA = {
-    en:{ ui:{
-        title:"Holiday Mixer — Slot Machine",
-        subtitle:"Click a cell to snap that reel to the center. Or spin reels. Align all five center cells to the same holiday.",
-        spinAll:"Spin All", newRound:"New Round",
-        cols:{name:"Name", story:"Story", food:"Food", season:"Season", symbol:"Symbol"},
-        coming:"Coming soon: real photos, videos, songs, and “Ask about this holiday”.",
+    en: {
+      ui: {
+        title: "Holiday Mixer v2 — Enhanced Slot Machine",
+        subtitle: "Choose mode, spin, align holidays! Earn points for power-ups.",
+        spinAll: "Spin All", newRound:"New Round",
+        cols:{name:"Name", story:"Story", food:"Food", season:"Season", symbol:"Symbol", extra1:"Custom1", extra2:"Custom2"},
+        coming:"Explore the photo, video, and song for this holiday!",
         win:(n)=>`🎉 You Win! It’s ${n}`, hintOff:"Hint: OFF", hintOn:"Hint: ON", looks:"Looks good!",
-        icons:{name:"🕯️",story:"📖",food:"🥙",season:"🍂",symbol:"✡️"},
-        media:{image:"Image",video:"“Video”",audio:"Song / Tune"},
+        icons:{name:"🕯️", story:"📖", food:"🥙", season:"🍂", symbol:"✡️", extra1:"🔮", extra2:"🌟"}
       },
       holidays:{
-        roshhashanah:{key:"roshhashanah",name:"Rosh Hashanah",story:"Jewish New Year; introspection and renewal",food:"Apples & honey; pomegranate",season:"Autumn • Tishrei (early)",symbol:"Shofar (ram's horn)",emoji:"📯🍎🍯",color:"#6aa9ff"},
-        yomkippur:{key:"yomkippur",name:"Yom Kippur",story:"Day of Atonement; fasting & prayer",food:"(Fast day) – pre/post fast meals",season:"Autumn • Tishrei (mid)",symbol:"White clothing; machzor",emoji:"🤍📖",color:"#b0c4ff"},
-        sukkot:{key:"sukkot",name:"Sukkot",story:"Festival of Booths; dwelling in sukkah",food:"Harvest meals in the sukkah",season:"Autumn • Tishrei (mid‑late)",symbol:"Lulav & etrog",emoji:"🌿🍋🏕️",color:"#79e0a7"},
-        simchattorah:{key:"simchattorah",name:"Simchat Torah",story:"Completion & restart of Torah reading",food:"Dancing sweets; kiddush treats",season:"Autumn • Tishrei (late)",symbol:"Dancing with Torah scrolls",emoji:"📜🕺",color:"#caa6ff"},
-        hanukkah:{key:"hanukkah",name:"Hanukkah",story:"Maccabees & the oil that lasted eight days",food:"Latkes; sufganiyot",season:"Early winter • Kislev",symbol:"Menorah/Chanukiah, dreidel",emoji:"🕎🫓🍩",color:"#ffd26a"},
-        purim:{key:"purim",name:"Purim",story:"Esther & Mordechai foil Haman's plot",food:"Hamantaschen",season:"Late winter • Adar",symbol:"Megillah & grogger",emoji:"🎭📜",color:"#ff9ad6"},
-        pesach:{key:"pesach",name:"Pesach (Passover)",story:"Exodus from Egypt; freedom from slavery",food:"Matzah, maror, charoset",season:"Spring • Nisan",symbol:"Seder plate / three matzot",emoji:"🍷🫓🍽️",color:"#9fe0ff"},
-        shavuot:{key:"shavuot",name:"Shavuot",story:"Giving of the Torah at Sinai",food:"Cheesecake & dairy dishes",season:"Early summer • Sivan",symbol:"Tablets / Torah scroll",emoji:"📜⛰️🧀",color:"#a7ffcc"}
+        roshhashanah:{key:"roshhashanah",name:"Rosh Hashanah",story:"Jewish New Year; introspection and renewal",food:"Apples & honey; pomegranate",season:"Autumn • Tishrei (early)",symbol:"Shofar (ram's horn)",extra1:"Sweet year wish",extra2:"Honey dip", image:"./photos/Shofar_in_Rosh_Hashanah.jpg", video:"./videos/SHABBAT DATI.mp4", song:"./audio files/HAVA NAGILA.m4a"},
+        yomkippur:{key:"yomkippur",name:"Yom Kippur",story:"Day of Atonement; fasting & prayer",food:"(Fast day) – pre/post fast meals",season:"Autumn • Tishrei (mid)",symbol:"White clothing; machzor",extra1:"Atonement",extra2:"Prayer book", image:"./photos/Jews_Praying_in_the_Synagogue_on_Yom_Kippur.jpg", video:"./videos/SHABBAT DATI.mp4", song:"./audio files/HAVA NAGILA.m4a"},
+        sukkot:{key:"sukkot",name:"Sukkot",story:"Festival of Booths; dwelling in sukkah",food:"Harvest meals in the sukkah",season:"Autumn • Tishrei (mid‑late)",symbol:"Lulav & etrog",extra1:"Booth dwelling",extra2:"Four species", image:"./photos/Sukkoth.jpg", video:"./videos/SHABBAT DATI.mp4", song:"./audio files/HAVA NAGILA.m4a"},
+        simchattorah:{key:"simchattorah",name:"Simchat Torah",story:"Completion & restart of Torah reading",food:"Dancing sweets; kiddush treats",season:"Autumn • Tishrei (late)",symbol:"Dancing with Torah scrolls",extra1:"Torah cycle",extra2:"Joyful dance", image:"./photos/Torah_and_jad.jpg", video:"./videos/SHABBAT DATI.mp4", song:"./audio files/HAVA NAGILA.m4a"},
+        hanukkah:{key:"hanukkah",name:"Hanukkah",story:"Maccabees & the oil that lasted eight days",food:"Latkes; sufganiyot",season:"Early winter • Kislev",symbol:"Menorah/Chanukiah, dreidel",extra1:"Oil miracle",extra2:"Eight lights", image:"./photos/hanukah NEROT.jpg", video:["./videos/HANNUKAH_1.mp4", "./videos/HANNUKAH_2.mp4", "./videos/HANNUKAH 3 SUFGANIOT.mp4", "./videos/HANNUKAH 4 SUFGANIOT.mp4"], song:"./audio files/MAOZ TSUR.m4a"},
+        purim:{key:"purim",name:"Purim",story:"Esther & Mordechai foil Haman's plot",food:"Hamantaschen",season:"Late winter • Adar",symbol:"Megillah & grogger",extra1:"Esther story",extra2:"Noise maker", image:"./photos/PURIM HAMENTASH.jpg", video:"./videos/SHABBAT DATI.mp4", song:"./audio files/HAVA NAGILA.m4a"},
+        pesach:{key:"pesach",name:"Pesach (Passover)",story:"Exodus from Egypt; freedom from slavery",food:"Matzah, maror, charoset",season:"Spring • Nisan",symbol:"Seder plate / three matzot",extra1:"Exodus",extra2:"Unleavened bread", image:"./photos/PASSOVER MATZA A.jpg", video:"./videos/PASSOVER_1.mp4", song:"./audio files/HAVA NAGILA.m4a"},
+        shavuot:{key:"shavuot",name:"Shavuot",story:"Giving of the Torah at Sinai",food:"Cheesecake & dairy dishes",season:"Early summer • Sivan",symbol:"Tablets / Torah scroll",extra1:"Torah giving",extra2:"Dairy custom", image:"./photos/2009_jni.jpg", video:"./videos/SHABBAT DATI.mp4", song:"./audio files/HAVA NAGILA.m4a"}
       }
     },
-    he:{ ui:{
-        title:"מערבל החגים — מכונת מזל",
-        subtitle:"לחצו על שורה כדי ליישר אותה למרכז. אפשר גם לסובב גלגלים. התאימו את כל חמשת השורות לחג אחד.",
+    he: {
+      ui: {
+        title:"מערבל החגים v2 — מכונת מזל משופרת",
+        subtitle:"בחרו מצב, סובבו, התאימו חגים! הרוויחו נקודות ליכולות מיוחדות.",
         spinAll:"סובב הכל", newRound:"סבב חדש",
-        cols:{name:"שם החג", story:"סיפור", food:"מאכל", season:"עונה", symbol:"סמל"},
-        coming:"בקרוב: תמונות אמיתיות, סרטונים, שירים, וכפתור „שאל על החג”.",
-        win:(n)=>`🎉 ניצחתם! זה ${n}`, hintOff:"רמז: כבוי", hintOn:"רמז: פועל", looks:"פיקס!",
-        icons:{name:"🕯️",story:"📖",food:"🥙",season:"🍂",symbol:"✡️"},
-        media:{image:"תמונה",video:"„וידאו”",audio:"מנגינה"}
+        cols:{name:"שם החג", story:"סיפור", food:"מאכל", season:"עונה", symbol:"סמל", extra1:"מותאם 1", extra2:"מותאם 2"},
+        coming:"חקרו את התמונה, הסרטון והשיר לחג זה!",
+        win:(n)=>`🎉 ניצחתם! זה ${n}`, hintOff:"רמז: כבוי", hintOn:"רמז: פועל", looks:"נראה טוב!",
+        icons:{name:"🕯️", story:"📖", food:"🥙", season:"🍂", symbol:"✡️", extra1:"🔮", extra2:"🌟"}
       },
       holidays:{
-        roshhashanah:{key:"roshhashanah",name:"ראש השנה",story:"ראש השנה; חשבון נפש והתחדשות",food:"תפוח ודבש; רימון",season:"סתיו • תשרי (תחילת תשרי)",symbol:"שופר",emoji:"📯🍎🍯",color:"#6aa9ff"},
-        yomkippur:{key:"yomkippur",name:"יום כיפור",story:"יום הכיפורים; צום ותפילה",food:"(יום צום) — ארוחות לפני/אחרי",season:"סתיו • תשרי (אמצע תשרי)",symbol:"בגדים לבנים; מחזור",emoji:"🤍📖",color:"#b0c4ff"},
-        sukkot:{key:"sukkot",name:"סוכות",story:"חג הסוכות; ישיבה בסוכה",food:"סעודות קציר בסוכה",season:"סתיו • תשרי (אמצע־סוף)",symbol:"לולב ואתרוג",emoji:"🌿🍋🏕️",color:"#79e0a7"},
-        simchattorah:{key:"simchattorah",name:"שמחת תורה",story:"סיום ופתיחה מחדש של קריאת התורה",food:"ממתקים בריקודים; קידוש",season:"סתיו • תשרי (סוף תשרי)",symbol:"ריקוד עם ספרי תורה",emoji:"📜🕺",color:"#caa6ff"},
-        hanukkah:{key:"hanukkah",name:"חנוכה",story:"החשמונאים ופך השמן לשמונה ימים",food:"לביבות; סופגניות",season:"תחילת חורף • כסלו",symbol:"חנוכייה/מנורה; סביבון",emoji:"🕎🫓🍩",color:"#ffd26a"},
-        purim:{key:"purim",name:"פורים",story:"אסתר ומרדכי מסכלים את המן",food:"אוזני המן",season:"סוף חורף • אדר",symbol:"מגילה ורעשן",emoji:"🎭📜",color:"#ff9ad6"},
-        pesach:{key:"pesach",name:"פסח",story:"יציאת מצרים; חירות מעבדות",food:"מצה, מרור, חרוסת",season:"אביב • ניסן",symbol:"קערת סדר / שלוש מצות",emoji:"🍷🫓🍽️",color:"#9fe0ff"},
-        shavuot:{key:"shavuot",name:"שבועות",story:"מתן תורה בהר סיני",food:"עוגת גבינה ומאכלי חלב",season:"תחילת קיץ • סיון",symbol:"לוחות / ספר תורה",emoji:"📜⛰️🧀",color:"#a7ffcc"}
+        roshhashanah:{key:"roshhashanah",name:"ראש השנה",story:"ראש השנה; חשבון נפש והתחדשות",food:"תפוח ודבש; רימון",season:"סתיו • תשרי (תחילת תשרי)",symbol:"שופר",extra1:"ברכה לשנה טובה",extra2:"טבילת דבש", image:"./photos/Shofar_in_Rosh_Hashanah.jpg", video:"./videos/SHABBAT DATI.mp4", song:"./audio files/HAVA NAGILA.m4a"},
+        yomkippur:{key:"yomkippur",name:"יום כיפור",story:"יום הכיפורים; צום ותפילה",food:"(יום צום) — ארוחות לפני/אחרי",season:"סתיו • תשרי (אמצע תשרי)",symbol:"בגדים לבנים; מחזור",extra1:"כפרה",extra2:"ספר תפילה", image:"./photos/Jews_Praying_in_the_Synagogue_on_Yom_Kippur.jpg", video:"./videos/SHABBAT DATI.mp4", song:"./audio files/HAVA NAGILA.m4a"},
+        sukkot:{key:"sukkot",name:"סוכות",story:"חג הסוכות; ישיבה בסוכה",food:"סעודות קציר בסוכה",season:"סתיו • תשרי (אמצע־סוף)",symbol:"לולב ואתרוג",extra1:"מגורים בסוכה",extra2:"ארבעת המינים", image:"./photos/Sukkoth.jpg", video:"./videos/SHABBAT DATI.mp4", song:"./audio files/HAVA NAGILA.m4a"},
+        simchattorah:{key:"simchattorah",name:"שמחת תורה",story:"סיום ופתיחה מחדש של קריאת התורה",food:"ממתקים בריקודים; קידוש",season:"סתיו • תשרי (סוף תשרי)",symbol:"ריקוד עם ספרי תורה",extra1:"מחזור תורה",extra2:"ריקוד שמח", image:"./photos/Torah_and_jad.jpg", video:"./videos/SHABBAT DATI.mp4", song:"./audio files/HAVA NAGILA.m4a"},
+        hanukkah:{key:"hanukkah",name:"חנוכה",story:"החשמונאים ופך השמן לשמונה ימים",food:"לביבות; סופגניות",season:"תחילת חורף • כסלו",symbol:"חנוכייה/מנורה; סביבון",extra1:"נס השמן",extra2:"שמונה נרות", image:"./photos/hanukah NEROT.jpg", video:["./videos/HANNUKAH_1.mp4", "./videos/HANNUKAH_2.mp4", "./videos/HANNUKAH 3 SUFGANIOT.mp4", "./videos/HANNUKAH 4 SUFGANIOT.mp4"], song:"./audio files/MAOZ TSUR.m4a"},
+        purim:{key:"purim",name:"פורים",story:"אסתר ומרדכי מסכלים את המן",food:"אוזני המן",season:"סוף חורף • אדר",symbol:"מגילה ורעשן",extra1:"סיפור אסתר",extra2:"רעשן", image:"./photos/PURIM HAMENTASH.jpg", video:"./videos/SHABBAT DATI.mp4", song:"./audio files/HAVA NAGILA.m4a"},
+        pesach:{key:"pesach",name:"פסח",story:"יציאת מצרים; חירות מעבדות",food:"מצה, מרור, חרוסת",season:"אביב • ניסן",symbol:"קערת סדר / שלוש מצות",extra1:"יציאת מצרים",extra2:"לחם מצה", image:"./photos/PASSOVER MATZA A.jpg", video:"./videos/PASSOVER_1.mp4", song:"./audio files/HAVA NAGILA.m4a"},
+        shavuot:{key:"shavuot",name:"שבועות",story:"מתן תורה בהר סיני",food:"עוגת גבינה ומאכלי חלב",season:"תחילת קיץ • סיון",symbol:"לוחות / ספר תורה",extra1:"מתן תורה",extra2:"מנהג חלבי", image:"./photos/2009_jni.jpg", video:"./videos/SHABBAT DATI.mp4", song:"./audio files/HAVA NAGILA.m4a"}
       }
     }
   };
-
-  const ROW_H=70, CENTER_ROW=1, CELEBRATION_MS=9000, CONFETTI_COUNT=300;
-  let LANG='en', hintOn=false, reels=[];
+  /* --------- App State --------- */
+  const ROW_H = 70, CENTER_ROW = 1, CELEBRATION_MS = 9000, CONFETTI_COUNT = 300;
+  let LANG = 'en', hintOn = false, reels = [], mode = 'medium', reelCount = 5, score = 0, timer = 120, timerId = null, powerUp = false, currentHoliday = null;
   const machine = document.getElementById('machine');
-  const statusEl= document.getElementById('status');
+  const statusEl = document.getElementById('status');
   const hintBtn = document.getElementById('btn-hint');
   const infoBox = document.getElementById('info');
   const winBanner = document.getElementById('win-banner');
-  const posterImg = document.getElementById('poster');
-  const animBox   = document.getElementById('anim');
-  const btnPlay   = document.getElementById('btn-play');
-  const btnStop   = document.getElementById('btn-stop');
-
-  let audioCtx=null, currentNodes=[];
-
-  function t(){ return DATA[LANG]; }
-  function H(){ return t().holidays; }
-
-  function build(){
-    document.getElementById('title').textContent = t().ui.title;
-    document.getElementById('subtitle').textContent = t().ui.subtitle;
-    document.querySelector('[data-i18n="spinAll"]').textContent = t().ui.spinAll;
-    document.getElementById('btn-new').textContent = t().ui.newRound;
-    document.getElementById('lbl-story').textContent = t().ui.cols.story;
-    document.getElementById('lbl-food').textContent = t().ui.cols.food;
-    document.getElementById('lbl-season').textContent = t().ui.cols.season;
-    document.getElementById('lbl-symbol').textContent = t().ui.cols.symbol;
-    document.getElementById('lbl-poster').textContent = t().ui.media.image;
-    document.getElementById('lbl-anim').textContent = t().ui.media.video;
-    document.getElementById('lbl-audio').textContent = t().ui.media.audio;
-    document.getElementById('coming').textContent = t().ui.coming;
-
-    document.documentElement.lang = (LANG==='he'?'he':'en');
-    document.documentElement.dir  = (LANG==='he'?'rtl':'ltr');
-    document.getElementById('lang-en').classList.toggle('on', LANG==='en');
-    document.getElementById('lang-he').classList.toggle('on', LANG==='he');
-
-    reels=[]; machine.innerHTML="";
+  const spinSound = document.getElementById('spin-sound');
+  const winSound = document.getElementById('win-sound');
+  const winVideo = document.getElementById('win-video');
+  const holidayPhoto = document.getElementById('holiday-photo');
+  const holidaySong = document.getElementById('holiday-song');
+  const photoCard = document.getElementById('photo-card');
+  const videoCard = document.getElementById('video-card');
+  const songCard = document.getElementById('song-card');
+  const comingEl = document.getElementById('coming');
+  const $ = (s) => document.querySelector(s);
+  function t() { return DATA[LANG]; }
+  function H() { return t().holidays; }
+  function getVideoPath(h) {
+    return Array.isArray(h.video) ? h.video[Math.floor(Math.random() * h.video.length)] : h.video;
+  }
+  /* --------- Build UI with Media --------- */
+  function build(reelNum = 5) {
+    reelCount = reelNum;
+    const titleEl = document.getElementById('title');
+    if (titleEl) titleEl.textContent = t().ui.title;
+    const subtitleEl = document.getElementById('subtitle');
+    if (subtitleEl) subtitleEl.textContent = t().ui.subtitle;
+    const spinAllEl = document.querySelector('[data-i18n="spinAll"]');
+    if (spinAllEl) spinAllEl.textContent = t().ui.spinAll;
+    const btnNewEl = document.getElementById('btn-new');
+    if (btnNewEl) btnNewEl.textContent = t().ui.newRound;
+    const lblStoryEl = document.getElementById('lbl-story');
+    if (lblStoryEl) lblStoryEl.textContent = t().ui.cols.story;
+    const lblFoodEl = document.getElementById('lbl-food');
+    if (lblFoodEl) lblFoodEl.textContent = t().ui.cols.food;
+    const lblSeasonEl = document.getElementById('lbl-season');
+    if (lblSeasonEl) lblSeasonEl.textContent = t().ui.cols.season;
+    const lblSymbolEl = document.getElementById('lbl-symbol');
+    if (lblSymbolEl) lblSymbolEl.textContent = t().ui.cols.symbol;
+    if (comingEl) comingEl.textContent = t().ui.coming;
+    document.documentElement.lang = (LANG === 'he' ? 'he' : 'en');
+    document.documentElement.dir = (LANG === 'he' ? 'rtl' : 'ltr');
+    const langEnEl = document.getElementById('lang-en');
+    if (langEnEl) langEnEl.classList.toggle('on', LANG === 'en');
+    const langHeEl = document.getElementById('lang-he');
+    if (langHeEl) langHeEl.classList.toggle('on', LANG === 'he');
+    reels = []; if (machine) machine.innerHTML = "";
     const CATS = [
-      {id:"name",   label:`${t().ui.icons.name} ${t().ui.cols.name}`,   get:(h)=>h.name},
-      {id:"story",  label:`${t().ui.icons.story} ${t().ui.cols.story}`, get:(h)=>h.story},
-      {id:"food",   label:`${t().ui.icons.food} ${t().ui.cols.food}`,   get:(h)=>h.food},
-      {id:"season", label:`${t().ui.icons.season} ${t().ui.cols.season}`,get:(h)=>h.season},
-      {id:"symbol", label:`${t().ui.icons.symbol} ${t().ui.cols.symbol}`,get:(h)=>h.symbol}
-    ];
-
-    CATS.forEach((cat,i)=>{
-      const reel=document.createElement('div');
-      reel.className='reel'; reel.dataset.i=i;
-      const topChrome=document.createElement('div'); topChrome.className='chrome';
-      const title=document.createElement('div'); title.className='title'; title.innerHTML = `<span class="ico"></span> ${cat.label}`;
-      const win=document.createElement('div'); win.className='window';
-      const payline=document.createElement('div'); payline.className='payline';
-      const strip=document.createElement('ul'); strip.className='strip';
+      {id:"name", label:`${t().ui.icons.name} ${t().ui.cols.name}`, get:(h)=>h.name},
+      {id:"story", label:`${t().ui.icons.story} ${t().ui.cols.story}`, get:(h)=>h.story},
+      {id:"food", label:`${t().ui.icons.food} ${t().ui.cols.food}`, get:(h)=>h.food},
+      {id:"season", label:`${t().ui.icons.season} ${t().ui.cols.season}`, get:(h)=>h.season},
+      {id:"symbol", label:`${t().ui.icons.symbol} ${t().ui.cols.symbol}`, get:(h)=>h.symbol},
+      {id:"extra1", label:`${t().ui.icons.extra1} ${t().ui.cols.extra1}`, get:(h)=>h.extra1},
+      {id:"extra2", label:`${t().ui.icons.extra2} ${t().ui.cols.extra2}`, get:(h)=>h.extra2}
+    ].slice(0, reelNum);
+    CATS.forEach((cat, i) => {
+      const reel = document.createElement('div');
+      reel.className = 'reel'; reel.dataset.i = i;
+      const topChrome = document.createElement('div'); topChrome.className = 'chrome';
+      const title = document.createElement('div'); title.className = 'title';
+      title.innerHTML = `<span class="ico"></span> ${cat.label}`;
+      const win = document.createElement('div'); win.className = 'window';
+      const payline = document.createElement('div'); payline.className = 'payline';
+      const strip = document.createElement('ul'); strip.className = 'strip';
       win.appendChild(strip); win.appendChild(payline);
+      const particles = document.createElement('div'); particles.className = 'particles'; reel.appendChild(particles);
       reel.appendChild(topChrome); reel.appendChild(title); reel.appendChild(win);
-
-      const ctrls=document.createElement('div'); ctrls.className='controls';
-      const spinBtn=mini('Spin'), upBtn=mini('▲'), downBtn=mini('▼');
-      ctrls.append(spinBtn,upBtn,downBtn); reel.appendChild(ctrls);
-      machine.appendChild(reel);
-
-      const baseItems = Object.values(H()).map(h=>({key:h.key, text:cat.get(h)}));
+      const ctrls = document.createElement('div'); ctrls.className = 'controls';
+      const spinBtn = mini('Spin'), upBtn = mini('▲'), downBtn = mini('▼');
+      ctrls.append(spinBtn, upBtn, downBtn); reel.appendChild(ctrls);
+      if (machine) machine.appendChild(reel);
+      const baseItems = Object.values(H()).map(h => ({key: h.key, text: cat.get(h), image: h.image}));
       shuffle(baseItems);
-      const obj={cat, items:baseItems, loop:null, index:baseItems.length, strip, payline, windowEl:win};
-      const loop=[...baseItems, ...baseItems, ...baseItems];
-      loop.forEach((it, idx)=>{ const li=document.createElement('li'); li.className='cell'; li.textContent=it.text; li.onclick=()=>snapToIndex(obj, idx); strip.appendChild(li); });
-      obj.loop=loop; reels.push(obj);
-
-      spinBtn.onclick=()=>spin(obj);
-      upBtn.onclick=()=>nudge(obj,-1);
-      downBtn.onclick=()=>nudge(obj, 1);
+      const obj = {cat, items: baseItems, loop: null, index: baseItems.length, strip, payline, windowEl: win};
+      const loop = [...baseItems, ...baseItems, ...baseItems];
+      loop.forEach((it, idx) => {
+        const li = document.createElement('li'); li.className = 'cell';
+        li.innerHTML = it.image ? `<img src="${it.image}" alt="${it.text}"> ${it.text}` : it.text;
+        li.onclick = () => snapToIndex(obj, idx);
+        strip.appendChild(li);
+      });
+      obj.loop = loop; reels.push(obj);
+      spinBtn.onclick = () => spin(obj);
+      upBtn.onclick = () => nudge(obj, -1);
+      downBtn.onclick = () => nudge(obj, 1);
     });
-
     applyAll(false);
-    statusEl.textContent=""; statusEl.className="status";
-    infoBox.style.display="none"; winBanner.classList.remove('show');
+    resetGame();
+    if (statusEl) statusEl.textContent = ""; if (statusEl) statusEl.className = "status";
+    if (infoBox) infoBox.style.display = "none"; if (winBanner) winBanner.classList.remove('show');
+    if (photoCard) photoCard.style.display = "none";
+    if (videoCard) videoCard.style.display = "none";
+    if (songCard) songCard.style.display = "none";
     updateHint();
   }
-
-  function mini(txt){const b=document.createElement('button'); b.className='btn-mini'; b.textContent=txt; return b;}
-  function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
-
-  function apply(r, animate=true){
-    if(!animate){ r.strip.style.transition='none'; }
-    const offset=(r.index - CENTER_ROW)*ROW_H;
-    r.strip.style.transform=`translateY(${-offset}px)`;
-    if(!animate){ requestAnimationFrame(()=>r.strip.style.transition=''); }
+  function mini(txt) {
+    const b = document.createElement('button'); b.className = 'btn-mini'; b.textContent = txt; return b;
   }
-  function applyAll(animate=true){ reels.forEach(r=>apply(r,animate)); }
-  function nudge(r,dir){
-    const L=r.loop.length;
-    r.index=(r.index+dir+L)%L;
-    apply(r); r.windowEl.classList.remove('stop'); void r.windowEl.offsetWidth; r.windowEl.classList.add('stop');
+  function shuffle(a) {
+    for(let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  /* --------- Reel Mechanics --------- */
+  function apply(r, animate=true) {
+    if (!r || !r.strip) return;
+    if (!animate) { r.strip.style.transition = 'none'; }
+    const offset = (r.index - CENTER_ROW) * 70;
+    r.strip.style.transform = `translateY(${-offset}px)`;
+    if (!animate) { requestAnimationFrame(() => r.strip.style.transition = ''); }
+  }
+  function applyAll(animate=true) { reels.forEach(r => apply(r, animate)); }
+  function nudge(r, dir) {
+    if (!r) return;
+    const L = r.loop.length;
+    r.index = (r.index + dir + L) % L;
+    apply(r);
+    r.windowEl.classList.remove('stop'); void r.windowEl.offsetWidth; r.windowEl.classList.add('stop');
     updateHint(); checkWin();
   }
-  function snapToIndex(r, loopIndex){
-    r.index=loopIndex; apply(r); r.windowEl.classList.remove('stop'); void r.windowEl.offsetWidth; r.windowEl.classList.add('stop');
+  function snapToIndex(r, loopIndex) {
+    if (!r) return;
+    r.index = loopIndex; apply(r);
+    r.windowEl.classList.remove('stop'); void r.windowEl.offsetWidth; r.windowEl.classList.add('stop');
     checkWin(); updateHint();
   }
-  function spin(r){ let steps=7+Math.floor(Math.random()*7), c=0; const t=setInterval(()=>{ nudge(r,1); if(++c>=steps){ clearInterval(t); checkWin(); } }, 90); }
-  function spinAll(){ statusEl.textContent=""; statusEl.className="status"; infoBox.style.display="none"; winBanner.classList.remove('show'); let i=0; const next=()=>{ if(i>=reels.length){ setTimeout(checkWin,140); return; } spin(reels[i++]); setTimeout(next, 120); }; next(); }
-  function centerItem(r){ const len=r.items.length; const idx=((r.index % len)+len)%len; return r.items[idx]; }
-
-  function updateHint(){
-    hintBtn.textContent = hintOn ? t().ui.hintOn : t().ui.hintOff;
-    const keys=reels.map(r=>centerItem(r).key), counts={}; keys.forEach(k=>counts[k]=(counts[k]||0)+1);
-    const best=Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0];
+  function spin(r) {
+    if (!r) return;
+    let steps = 7 + Math.floor(Math.random() * 7), c = 0;
+    playSpin();
+    const t = setInterval(() => { nudge(r, 1); if (++c >= steps) { clearInterval(t); checkWin(); } }, 90);
+  }
+  function spinAll() {
+    if (statusEl) statusEl.textContent = ""; if (statusEl) statusEl.className = "status";
+    if (infoBox) infoBox.style.display = "none";
+    if (photoCard) photoCard.style.display = "none";
+    if (videoCard) videoCard.style.display = "none";
+    if (songCard) songCard.style.display = "none";
+    if (winBanner) winBanner.classList.remove('show');
+    let i = 0; const next = () => { if (i >= reels.length) { setTimeout(checkWin, 140); return; } spin(reels[i++]); setTimeout(next, 120); };
+    next();
+  }
+  function centerItem(r) {
+    if (!r) return {key: '', text: '', image: ''};
+    const len = r.items.length;
+    const idx = ((r.index % len) + len) % len;
+    return r.items[idx];
+  }
+  /* --------- Hint & “one away” glow --------- */
+  function updateHint() {
+    if (hintBtn) hintBtn.textContent = hintOn ? t().ui.hintOn : t().ui.hintOff;
+    const keys = reels.map(r => centerItem(r).key);
+    const counts = {}; keys.forEach(k => counts[k] = (counts[k] || 0) + 1);
+    const best = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
     const bestCount = best ? counts[best] : 0;
-    reels.forEach(r=>r.payline.classList.toggle('almost', bestCount===4));
-    if(!hintOn) return;
-    if(!best){ hintBtn.textContent = t().ui.hintOn; return; }
-    const toFix=[]; reels.forEach(r=>{ if(centerItem(r).key!==best){ const correct=r.items.find(it=>it.key===best)?.text || "—"; toFix.push(`${r.cat.label.replace(/^[^ ]+ /,'')}: “${short(correct)}”`); }});
-    hintBtn.textContent = toFix.length ? `${t().ui.hintOn} → ${toFix.join("; ")}` : `${t().ui.hintOn} → ${t().ui.looks}`;
+    reels.forEach(r => r.payline.classList.toggle('almost', bestCount === reelCount - 1));
+    if (!hintOn) return;
+    if (!best) { if (hintBtn) hintBtn.textContent = t().ui.hintOn; return; }
+    const toFix = [];
+    reels.forEach(r => {
+      if (centerItem(r).key !== best) {
+        const correct = r.items.find(it => it.key === best)?.text || "—";
+        toFix.push(`${r.cat.label.replace(/^[^ ]+ /, '')}: “${short(correct)}”`);
+      }
+    });
+    if (hintBtn) hintBtn.textContent = toFix.length ? `${t().ui.hintOn} → ${toFix.join("; ")}` : `${t().ui.hintOn} → ${t().ui.looks}`;
   }
-  function short(s){ return s.length>28 ? s.slice(0,25)+"…" : s; }
-
-  function checkWin(){
-    const keys=reels.map(r=>centerItem(r).key);
-    const ok=keys.every(k=>k===keys[0]);
-    if(!ok) return;
-    const h = Object.values(H()).find(x=>x.key===keys[0]);
-    statusEl.className="status success";
-    statusEl.textContent = t().ui.win(h.name);
+  function short(s) { return s.length > 28 ? s.slice(0, 25) + "…" : s; }
+  /* --------- Win --------- */
+  function checkWin() {
+    const keys = reels.map(r => centerItem(r).key);
+    const ok = keys.every(k => k === keys[0]);
+    if (!ok) return;
+    const h = Object.values(H()).find(x => x.key === keys[0]);
+    currentHoliday = h; // Store for AI button
+    if (statusEl) statusEl.className = "status success";
+    if (statusEl) statusEl.textContent = t().ui.win(h.name);
+    addScore(50); // Award points on win
     revealInfo(h);
-    celebrate();
-    reels.forEach(r=>r.payline.classList.remove('almost'));
+    celebrate(h);
+    reels.forEach(r => r.payline.classList.remove('almost'));
   }
-
-  function celebrate(){
-    winBanner.textContent = (LANG==='he') ? "🎉 ניצחון! 🎉" : "🎉 YOU WIN! 🎉";
-    winBanner.classList.add('show');
-    setTimeout(()=>winBanner.classList.remove('show'), CELEBRATION_MS);
-    confetti(CONFETTI_COUNT); jingle();
-    document.querySelector('.machine').classList.add('win');
-    setTimeout(()=>document.querySelector('.machine').classList.remove('win'), CELEBRATION_MS);
+  /* --------- Celebration --------- */
+  function celebrate(h) {
+    if (winBanner) winBanner.textContent = (LANG === 'he') ? "🎉 ניצחון! 🎉" : "🎉 YOU WIN! 🎉";
+    if (winBanner) winBanner.classList.add('show');
+    setTimeout(() => { if (winBanner) winBanner.classList.remove('show'); }, CELEBRATION_MS);
+    confetti(CONFETTI_COUNT);
+    if (winVideo && h.video) {
+      winVideo.currentTime = 0;
+      winVideo.play();
+    }
+    if (winSound && h.song) {
+      winSound.src = h.song;
+      winSound.load();
+      winSound.play();
+    }
+    jingle(); // Secondary effect
+    const machineEl = document.querySelector('.machine');
+    if (machineEl) machineEl.classList.add('win');
+    setTimeout(() => { if (machineEl) machineEl.classList.remove('win'); }, CELEBRATION_MS);
+    if (machineEl) createParticles(machineEl);
   }
-  function confetti(n){
-    for(let i=0;i<n;i++){
-      const d=document.createElement('div'); d.className='confetti';
-      d.style.left=(Math.random()*100)+"vw";
-      d.style.background=`hsl(${Math.random()*360},85%,58%)`;
+  function confetti(n) {
+    for (let i = 0; i < n; i++) {
+      const d = document.createElement('div'); d.className = 'confetti';
+      d.style.left = (Math.random() * 100) + "vw";
+      d.style.background = `hsl(${Math.random() * 360}, 85%, 58%)`;
       document.body.appendChild(d);
-      const dur=CELEBRATION_MS-600 + Math.random()*900, rot=360+Math.random()*720, end=105+Math.random()*10;
-      d.animate([{transform:'translateY(0) rotate(0deg)'},{transform:`translateY(${end}vh) rotate(${rot}deg)`}],{duration:dur,easing:'cubic-bezier(.2,.8,.2,1)'});
-      setTimeout(()=>d.remove(), dur+160);
+      const dur = CELEBRATION_MS - 600 + Math.random() * 900, rot = 360 + Math.random() * 720, end = 105 + Math.random() * 10;
+      d.animate([{transform: 'translateY(0) rotate(0deg)'}, {transform: `translateY(${end}vh) rotate(${rot}deg)`}], {duration: dur, easing: 'cubic-bezier(.2,.8,.2,1)'});
+      setTimeout(() => d.remove(), dur + 160);
     }
   }
-
-  /* ---------- Prototype Media (no files) ---------- */
-  function svgPoster(text,emoji,bg){
-    const lang = (LANG==='he')?'he':'en';
-    const dir  = (LANG==='he')?'rtl':'ltr';
-    const safe = encodeURIComponent(
-`<svg xmlns='http://www.w3.org/2000/svg' width='800' height='500' lang='${lang}'>
-  <defs>
-    <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
-      <stop offset='0%' stop-color='${bg}'/>
-      <stop offset='100%' stop-color='#0a1130'/>
-    </linearGradient>
-  </defs>
-  <rect width='100%' height='100%' fill='url(#g)' rx='24' ry='24'/>
-  <text x='50%' y='58%' font-family='Segoe UI, Arial' font-size='64' font-weight='900' text-anchor='middle' fill='#ffffff' direction='${dir}'>${text}</text>
-  <text x='50%' y='40%' font-size='120' text-anchor='middle'>${emoji}</text>
-</svg>`);
-    return `data:image/svg+xml;charset=utf-8,${safe}`;
+  function jingle() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)(), now = ctx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5, 1568.0];
+      notes.forEach((f, i) => { const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'triangle'; o.frequency.value = f; o.connect(g); g.connect(ctx.destination);
+        const t = now + i * 0.14; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.42, t + .06); g.gain.exponentialRampToValueAtTime(.0001, t + .8);
+        o.start(t); o.stop(t + .82);
+      });
+    } catch(e) {}
   }
-
-  function setMedia(h){
-    posterImg.src = svgPoster(h.name, h.emoji, h.color);
-    animBox.textContent = h.emoji.split('')[0] || '🎉';
-    animBox.classList.add('bounce');
-    btnPlay.onclick = ()=>playTheme(h.key);
-    btnStop.onclick = stopAudio;
+  /* --------- Info panel --------- */
+  function revealInfo(h) {
+    const infoTitleEl = document.getElementById('info-title');
+    if (infoTitleEl) infoTitleEl.textContent = h.name;
+    const iStoryEl = document.getElementById('i-story');
+    if (iStoryEl) iStoryEl.textContent = h.story;
+    const iFoodEl = document.getElementById('i-food');
+    if (iFoodEl) iFoodEl.textContent = h.food;
+    const iSeasonEl = document.getElementById('i-season');
+    if (iSeasonEl) iSeasonEl.textContent = h.season;
+    const iSymbolEl = document.getElementById('i-symbol');
+    if (iSymbolEl) iSymbolEl.textContent = h.symbol;
+    if (infoBox) infoBox.style.display = "";
+    if (infoBox) infoBox.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    if (photoCard && h.image) {
+      photoCard.style.display = "block";
+      holidayPhoto.src = h.image;
+    }
+    if (videoCard && h.video) {
+      videoCard.style.display = "block";
+      const source = winVideo.querySelector('source');
+      source.src = getVideoPath(h);
+      winVideo.load();
+    }
+    if (songCard && h.song) {
+      songCard.style.display = "block";
+      const source = holidaySong.querySelector('source');
+      source.src = h.song;
+      holidaySong.load();
+    }
   }
-
-  function revealInfo(h){
-    document.getElementById('info-title').textContent=h.name;
-    document.getElementById('i-story').textContent=h.story;
-    document.getElementById('i-food').textContent=h.food;
-    document.getElementById('i-season').textContent=h.season;
-    document.getElementById('i-symbol').textContent=h.symbol;
-    setMedia(h);
-    infoBox.style.display="";
-    infoBox.scrollIntoView({behavior:'smooth', block:'nearest'});
+  /* --------- New Challenge Functions --------- */
+  function resetGame() {
+    score = 0; timer = mode === 'easy' ? Infinity : 120; powerUp = false;
+    if (statusEl) statusEl.textContent = `Score: ${score} | Time: ${timer}s`;
+    if (timerId) clearInterval(timerId);
+    if (timer !== Infinity) timerId = setInterval(() => { timer--; if (statusEl) statusEl.textContent = `Score: ${score} | Time: ${timer}s`; if (timer <= 0) endGame(); }, 1000);
   }
-
-  /* ---- Tiny WebAudio “tunes” per holiday (no files) ---- */
-  function playTheme(key){
-    stopAudio();
-    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-    const now=audioCtx.currentTime;
-    const scales={
-      roshhashanah:[392,523,659,784],         // G4 C5 E5 G5
-      yomkippur:[392,466,523,466,392],       // Minor-ish
-      sukkot:[392,494,587,659,784],          // Bright
-      simchattorah:[659,784,880,988],        // Dancing up
-      hanukkah:[392,523,587,659,587,523],    // Simple “festival”
-      purim:[392,440,494,523,494,440],       // Playful
-      pesach:[392,523,587,523,392,330],      // Stepwise
-      shavuot:[523,659,784,659,523]          // Ascent
+  function endGame() { alert('Time up! Final score: ' + score); build(reelCount); }
+  function addScore(pts) { score += pts; if (score >= 200) powerUp = true; } // Use powerUp for auto-nudge
+  /* --------- Audio Triggers --------- */
+  function playSpin() { if (spinSound) spinSound.play(); }
+  /* --------- Particles WOW --------- */
+  function createParticles(el, count=20) {
+    if (!el) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div'); p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%'; p.style.top = Math.random() * 100 + '%';
+      p.style.animationDelay = Math.random() + 's';
+      el.appendChild(p); setTimeout(() => p.remove(), 2000);
+    }
+  }
+  /* --------- Event Handlers --------- */
+  window.addEventListener('DOMContentLoaded', () => {
+    build(5); // Initial build
+    const langEnEl = document.getElementById('lang-en');
+    if (langEnEl) langEnEl.onclick = () => { LANG = 'en'; build(reelCount); };
+    const langHeEl = document.getElementById('lang-he');
+    if (langHeEl) langHeEl.onclick = () => { LANG = 'he'; build(reelCount); };
+    const btnSpinAllEl = document.getElementById('btn-spin-all');
+    if (btnSpinAllEl) btnSpinAllEl.onclick = spinAll;
+    const btnNewEl = document.getElementById('btn-new');
+    if (btnNewEl) btnNewEl.onclick = () => build(reelCount);
+    const leverEl = document.getElementById('lever');
+    if (leverEl) leverEl.onclick = spinAll;
+    if (hintBtn) hintBtn.onclick = () => { hintOn = !hintOn; updateHint(); };
+    const btnEasyEl = document.getElementById('btn-easy');
+    if (btnEasyEl) btnEasyEl.onclick = () => { mode = 'easy'; build(3); };
+    const btnMediumEl = document.getElementById('btn-medium');
+    if (btnMediumEl) btnMediumEl.onclick = () => { mode = 'medium'; build(5); };
+    const btnHardEl = document.getElementById('btn-hard');
+    if (btnHardEl) btnHardEl.onclick = () => { mode = 'hard'; build(7); };
+    const aiAskEl = document.getElementById('ai-ask');
+    if (aiAskEl) aiAskEl.onclick = () => {
+      if (currentHoliday) {
+        const query = `Tell me more about ${currentHoliday.name} Jewish holiday`;
+        window.open(`https://grok.x.ai/?q=${encodeURIComponent(query)}`, '_blank');
+      }
     };
-    const seq=scales[key]||[523,659,783,1046];
-    seq.forEach((freq,i)=>{
-      const o=audioCtx.createOscillator(), g=audioCtx.createGain();
-      o.type='triangle'; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination);
-      const t=now+i*0.22;
-      g.gain.setValueAtTime(0,t);
-      g.gain.linearRampToValueAtTime(.45,t+.06);
-      g.gain.exponentialRampToValueAtTime(.0001,t+.6);
-      o.start(t); o.stop(t+.62);
-      currentNodes.push(o,g);
-    });
-  }
-  function stopAudio(){
-    if(!audioCtx) return;
-    try{ currentNodes.forEach(n=>n.stop?.()); }catch(e){}
-    currentNodes=[]; try{ audioCtx.close(); }catch(e){}
-    audioCtx=null;
-  }
-
-  function jingle(){ playTheme('sukkot'); } // reuse for win
-
-  function celebrate(){
-    winBanner.textContent = (LANG==='he') ? "🎉 ניצחון! 🎉" : "🎉 YOU WIN! 🎉";
-    winBanner.classList.add('show');
-    setTimeout(()=>winBanner.classList.remove('show'), CELEBRATION_MS);
-    confetti(CONFETTI_COUNT); jingle();
-    document.querySelector('.machine').classList.add('win');
-    setTimeout(()=>document.querySelector('.machine').classList.remove('win'), CELEBRATION_MS);
-  }
-
-  /* Controls */
-  document.getElementById('lang-en').onclick=()=>{ LANG='en'; build(); };
-  document.getElementById('lang-he').onclick=()=>{ LANG='he'; build(); };
-  document.getElementById('btn-spin-all').onclick=spinAll;
-  document.getElementById('btn-new').onclick=build;
-  document.getElementById('lever').onclick=spinAll;
-  document.getElementById('btn-hint').onclick=()=>{ hintOn=!hintOn; updateHint(); };
-
-  function short(s){ return s.length>28 ? s.slice(0,25)+"…" : s; }
-  window.addEventListener('DOMContentLoaded', build);
+  });
 })();
 </script>
 </body>
